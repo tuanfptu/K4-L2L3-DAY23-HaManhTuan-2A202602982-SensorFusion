@@ -1,0 +1,100 @@
+{
+  "experiment": "Lateral translation error added to the camera vehicle-to-sensor extrinsic y translation; original run used offset 0.",
+  "fixed_conditions": {
+    "segment": "training_segment-1005081002024129653_5313_150_5333_150_with_camera_labels.tfrecord",
+    "frames": [
+      0,
+      198
+    ],
+    "seed": 0
+  },
+  "visual_camera_update_example": {
+    "frame": 148,
+    "track_id": 14,
+    "before": {
+      "track_id": 14,
+      "x": 10.865351467674794,
+      "y": -0.39767976812229644,
+      "z": 2.4587965537592846
+    },
+    "after": {
+      "track_id": 14,
+      "x": 10.947205543209956,
+      "y": -0.8179117892626345,
+      "z": 2.206549891153682
+    },
+    "shift": 0.4281297014613791
+  },
+  "calibration": [
+    {
+      "lateral_extrinsic_error_m": 0.0,
+      "innovation_norm_samples_including_accepted_updates": 8285,
+      "innovation_norm_px_mean": 289.01807898296516,
+      "innovation_norm_px_median": 235.76809704954482,
+      "innovation_norm_px_p95": 775.4894392965799,
+      "camera_association_candidate_pairs": 7776,
+      "mahalanobis_sq_median": 690.9813646304594,
+      "gate_accept_fraction": 0.07523148148148148,
+      "tracking": {
+        "rmse": 0.13586676200301973,
+        "matches": 502,
+        "sum_sq_err": 9.266808062626975,
+        "ghost_track_frames": 0,
+        "missed_gt_frames": 239,
+        "mean_confirmed_tracks": 2.522613065326633
+      }
+    },
+    {
+      "lateral_extrinsic_error_m": 0.25,
+      "innovation_norm_px_mean": 294.68560759816853,
+      "innovation_norm_px_median": 243.3925353504195,
+      "innovation_norm_px_p95": 780.8408009634692,
+      "mahalanobis_sq_median": 727.9767129168586,
+      "gate_accept_fraction": 0.07515495867768596,
+      "tracking": {
+        "rmse": 0.20035706003065434,
+        "matches": 502,
+        "sum_sq_err": 20.15176165507187,
+        "ghost_track_frames": 0,
+        "missed_gt_frames": 239,
+        "mean_confirmed_tracks": 2.522613065326633
+      },
+      "innovation_norm_samples_including_accepted_updates": 8250
+    },
+    {
+      "lateral_extrinsic_error_m": 0.5,
+      "innovation_norm_px_mean": 314.3373895971021,
+      "innovation_norm_px_median": 270.4027625594508,
+      "innovation_norm_px_p95": 800.161787453162,
+      "mahalanobis_sq_median": 778.3258551210367,
+      "gate_accept_fraction": 0.03687888198757764,
+      "tracking": {
+        "rmse": 0.24761328540721914,
+        "matches": 502,
+        "sum_sq_err": 30.778794233298793,
+        "ghost_track_frames": 0,
+        "missed_gt_frames": 239,
+        "mean_confirmed_tracks": 2.522613065326633
+      },
+      "innovation_norm_samples_including_accepted_updates": 7933
+    },
+    {
+      "lateral_extrinsic_error_m": 1.0,
+      "innovation_norm_px_mean": 340.9702016273796,
+      "innovation_norm_px_median": 303.7508705773256,
+      "innovation_norm_px_p95": 829.0261564092089,
+      "mahalanobis_sq_median": 919.3612864551706,
+      "gate_accept_fraction": 0.01276706618030224,
+      "tracking": {
+        "rmse": 0.16633820075541722,
+        "matches": 502,
+        "sum_sq_err": 13.88953530933584,
+        "ghost_track_frames": 0,
+        "missed_gt_frames": 239,
+        "mean_confirmed_tracks": 2.522613065326633
+      },
+      "innovation_norm_samples_including_accepted_updates": 7691
+    }
+  ],
+  "baseline_instrumentation_note": "Innovation norm samples include candidate residuals used for gating and residuals evaluated again for accepted EKF updates. Mahalanobis median and gate accept fraction are computed only across association candidate pairs."
+}

@@ -50,15 +50,25 @@ File per-mode `metrics_lidar.json`, `metrics_fused.json`, `grade_run_lidar.log`,
 Liệt kê phần bonus đã làm, file bằng chứng trong `student/bonus/` và kết quả chính
 (xem [RUBRIC.md](../RUBRIC.md) mục 2). Không làm thì ghi "Không".
 
-- 
+- **Trực quan hóa (+3):** `student/bonus/bev_tracks.png` cho thấy các track ID trên BEV qua frame 0–198; `camera_update_effect.png` so sánh cùng track ID 14 ở frame 148 ngay sau lượt LiDAR và sau camera. Camera update dịch trạng thái XY khoảng `0.428 m`; `tracks_cvat.json` được xuất bằng `fusion_lab.export_cvat.export_tracks_json`.
+- **Phân tích calibration (+4):** Giữ nguyên segment, seed 0 và pipeline, cộng sai lệch tịnh tiến ngang vào `veh_to_sens[1,3]` của camera. Bảng và dữ liệu chi tiết ở `student/bonus/calibration_results.json`. Innovation norm gồm residual ở bước thử association và residual được tính lại cho EKF update đã ghép; median Mahalanobis và tỷ lệ qua cổng tính trên candidate pairs.
+
+| Lệch ngang extrinsic (m) | Innovation norm median / P95 (px) | Median `d²` | Qua cổng χ² | RMSE fused (m) |
+|---:|---:|---:|---:|---:|
+| 0.00 | 235.8 / 775.5 | 691.0 | 7.52% | 0.1359 |
+| 0.25 | 243.4 / 780.8 | 728.0 | 7.52% | 0.2004 |
+| 0.50 | 270.4 / 800.2 | 778.3 | 3.69% | 0.2476 |
+| 1.00 | 303.8 / 829.0 | 919.4 | 1.28% | 0.1663 |
+
+Khi lệch ngang tăng, residual pixel và `d²` trung vị tăng, còn tỷ lệ candidate qua cổng giảm; một số phép đo sai vẫn nằm trong cổng nên RMSE tăng ở 0.25–0.50 m. Ở 1.00 m, gating loại gần 99% candidate, khiến RMSE giảm về gần baseline LiDAR `0.1503 m` nhưng vẫn cao hơn. Cả ba mức vẫn có 502 matches, 0 ghost và 239 misses. `tracks_cvat.json` đã được xuất; chưa có ảnh xác nhận import vào CVAT nên không khai claim bonus CVAT (+3).
 
 ## Khai báo sử dụng AI (bắt buộc)
 
 Ghi rõ, kể cả khi không dùng ("Không dùng AI"). Xem [RULES.md](../RULES.md) mục 2.
 
 - Công cụ đã dùng (ChatGPT, Copilot, Claude, …): ChatGPT (Codex).
-- Dùng cho phần nào (hàm, câu hỏi, debug): Hỗ trợ triển khai và rà soát các phần E–H; chuẩn bị cấu hình và báo cáo từ kết quả chạy thực tế.
-- Cách bạn đã kiểm tra lại (pytest, chạy Waymo, đối chiếu công thức): Chạy `pytest student/tests -q` (128 passed); chạy `--fusion compare --seed 0` trên frame 0–198; đối chiếu metrics với JSONL.
+- Dùng cho phần nào (hàm, câu hỏi, debug): Hỗ trợ triển khai/rà soát E–H, trực quan hóa track, chạy và diễn giải thử nghiệm calibration; báo cáo dùng số liệu chạy thực tế.
+- Cách bạn đã kiểm tra lại (pytest, chạy Waymo, đối chiếu công thức): Chạy `pytest student/tests -q` (128 passed); chạy `--fusion compare --seed 0` trên frame 0–198; chạy ba mức lệch extrinsic, lưu kết quả; đối chiếu metrics với JSONL.
 
 ## Checklist nộp
 
