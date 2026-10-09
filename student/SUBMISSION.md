@@ -4,19 +4,19 @@
 
 ## Thông tin học viên
 
-- Họ tên:
-- MSSV:
+- Họ tên: Ha Manh Tuan
+- MSSV: 2A202602982
 - Email:
-- Link repo (fork):
-- Commit hash nộp (`git rev-parse HEAD`):
+- Link repo (fork): https://github.com/tuanfptu/K4-L2L3-DAY23-HaManhTuan-2A202602982-SensorFusion
+- Commit hash nộp (`git rev-parse HEAD`): Ghi trên LMS cùng link repo
 
 ## Tóm tắt kết quả
 
-- `fusion_mode` (bắt buộc `compare`), `frames`, `segment`, `seed`:
-- `detection.precision`, `detection.recall`, `detection.tp/fp/fn`:
-- `tracking.lidar.rmse`, `matches`, `sum_sq_err`, `ghost_track_frames`, `missed_gt_frames`, `mean_confirmed_tracks`:
-- `tracking.fused.rmse`, `matches`, `sum_sq_err`, `ghost_track_frames`, `missed_gt_frames`, `mean_confirmed_tracks`:
-- Giải thích khác biệt hai mode, đọc RMSE cùng số ghép và ghost/miss:
+- `fusion_mode=compare`, `frames=[0, 198]`, segment `training_segment-1005081002024129653_5313_150_5333_150_with_camera_labels.tfrecord`, `seed=0`.
+- Detection: precision `0.9701`, recall `0.7004`, TP/FP/FN = `519/16/222`.
+- LiDAR tracking: RMSE `0.150323 m`, matches `502`, sum_sq_err `11.343646 m²`, ghosts `0`, misses `239`, mean confirmed tracks `2.5226`.
+- Fused tracking: RMSE `0.135867 m`, matches `502`, sum_sq_err `9.266808 m²`, ghosts `0`, misses `239`, mean confirmed tracks `2.5226`.
+- Cả hai mode ghép được cùng 502 cặp, không có ghost và bỏ lỡ 239 nhãn xe hợp lệ. Camera giảm RMSE khoảng `0.014456 m` (xấp xỉ `9.6%`) mà không thay đổi số matches/ghost/miss; các số được lấy từ `student/artifacts/metrics.json` và log JSONL tương ứng.
 
 Chạy từ root repo:
 
@@ -38,13 +38,12 @@ File per-mode `metrics_lidar.json`, `metrics_fused.json`, `grade_run_lidar.log`,
 
 ## Giải thích ngắn (Parts E–H — tự viết)
 
-1. Khác biệt đo lidar 3D và camera 2D trong EKF (`z`, `R`)?
-2. Vì sao cần gating Mahalanobis trước khi gán?
-3. Pipeline là track-then-fuse hay fuse-then-track? Chỉ ra trên log `fusion-run-lab`.
-4. Nếu camera lệch calibration, triệu chứng gì trên innovation/residual?
-5. Vì sao `associate_and_update(..., sensor)` cần sensor tường minh ở frame rỗng?
-   Giải thích vì sao lidar quyết định score/init/delete còn camera chỉ EKF update.
-6. Nêu điều kiện xác nhận, giữ confirmed sau miss, và điều kiện xóa track.
+1. **Đo LiDAR và camera trong EKF:** LiDAR đo tâm 3D trong hệ tọa độ cảm biến, `z=[x,y,z]`, `R` là covariance theo mét². Camera đo pixel `z=[u,v]`, dùng phép chiếu pinhole từ tọa độ camera và `R=diag(σ_i²,σ_j²)` theo pixel². Mỗi sensor có hàm đo/Jacobian riêng; EKF dùng chúng để tính innovation và cập nhật cùng trạng thái 6D.
+2. **Mahalanobis gating:** Dùng `d²=γᵀS⁻¹γ` để xét độ lệch so với bất định tổng hợp của track và measurement; cổng χ² theo số chiều đo loại cặp không hợp lý trước khi greedy matching. Vì chuẩn hóa theo `S`, cùng một sai lệch được chấp nhận rộng hơn khi bất định lớn; Euclidean không xét covariance.
+3. **Track-then-fuse:** Runner dự đoán track một lần mỗi frame, chạy association/update LiDAR, rồi association/update camera lên các track hiện có. Có thể đối chiếu các record `mode=lidar` và `mode=fused` trong `grade_run.log`; phần khởi tạo/xác nhận/xóa chỉ ở lượt LiDAR. Camera lab là tâm hộp 2D ground-truth FRONT cộng nhiễu seeded, không phải detector ảnh.
+4. **Lệch calibration camera:** Extrinsic/intrinsic sai làm dự đoán pixel `h(x)` lệch có hệ thống, khiến innovation/residual camera thường lớn hoặc lệch theo một hướng. Nhiều residual vượt cổng χ² sẽ bị từ chối; nếu vẫn lọt cổng, update có thể kéo trạng thái track sai và làm tăng sai số.
+5. **Sensor tường minh ở frame rỗng:** Khi `meas_list` rỗng, không thể suy ra lượt xử lý là LiDAR hay camera từ measurement. Sensor tường minh giúp luôn gọi quản lý đúng lượt: LiDAR có thể ghi miss cho track đang trong FOV và đánh giá xóa; camera rỗng không được tính miss tồn tại. LiDAR tạo track từ measurement chưa ghép và quyết định score/lifecycle; camera chỉ tinh chỉnh EKF.
+6. **Vòng đời track:** Track mới khởi tạo với score `1/window`; mỗi hit LiDAR cộng `1/window` (tối đa 1), mỗi miss trong FOV trừ `1/window`. Track được xác nhận khi `score > confirmed_threshold`; track đã confirmed vẫn giữ trạng thái sau miss. Xóa nếu phương sai ngang `P[0,0]` hoặc `P[1,1]` vượt `max_P`, hoặc track confirmed có score `< delete_threshold`, hoặc track chưa confirmed có score `<= 0`.
 
 ## Bonus (không bắt buộc)
 
@@ -57,9 +56,9 @@ Liệt kê phần bonus đã làm, file bằng chứng trong `student/bonus/` v�
 
 Ghi rõ, kể cả khi không dùng ("Không dùng AI"). Xem [RULES.md](../RULES.md) mục 2.
 
-- Công cụ đã dùng (ChatGPT, Copilot, Claude, …):
-- Dùng cho phần nào (hàm, câu hỏi, debug):
-- Cách bạn đã kiểm tra lại (pytest, chạy Waymo, đối chiếu công thức):
+- Công cụ đã dùng (ChatGPT, Copilot, Claude, …): ChatGPT (Codex).
+- Dùng cho phần nào (hàm, câu hỏi, debug): Hỗ trợ triển khai và rà soát các phần E–H; chuẩn bị cấu hình và báo cáo từ kết quả chạy thực tế.
+- Cách bạn đã kiểm tra lại (pytest, chạy Waymo, đối chiếu công thức): Chạy `pytest student/tests -q` (128 passed); chạy `--fusion compare --seed 0` trên frame 0–198; đối chiếu metrics với JSONL.
 
 ## Checklist nộp
 
