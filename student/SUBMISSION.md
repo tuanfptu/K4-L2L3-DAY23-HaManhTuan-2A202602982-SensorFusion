@@ -4,9 +4,9 @@
 
 ## Thông tin học viên
 
-- Họ tên: Ha Manh Tuan
+- Họ tên: Hà Mạnh Tuân
 - MSSV: 2A202602982
-- Email: Không cung cấp trong báo cáo này.
+- Email: hatuan31102002@gmail.com
 - Link repo (fork): https://github.com/tuanfptu/K4-L2L3-DAY23-HaManhTuan-2A202602982-SensorFusion
 - Commit hash: Tra cứu commit mới nhất trên nhánh `main` bằng `git rev-parse HEAD`; không nộp LMS theo yêu cầu hiện tại.
 
