@@ -6,9 +6,9 @@
 
 - Họ tên: Ha Manh Tuan
 - MSSV: 2A202602982
-- Email:
+- Email: Không cung cấp trong báo cáo này.
 - Link repo (fork): https://github.com/tuanfptu/K4-L2L3-DAY23-HaManhTuan-2A202602982-SensorFusion
-- Commit hash nộp (`git rev-parse HEAD`): Ghi trên LMS cùng link repo
+- Commit hash: Tra cứu commit mới nhất trên nhánh `main` bằng `git rev-parse HEAD`; không nộp LMS theo yêu cầu hiện tại.
 
 ## Tóm tắt kết quả
 
@@ -36,7 +36,7 @@ detector. Kết quả này không đo hiệu quả một perception system độ
 File per-mode `metrics_lidar.json`, `metrics_fused.json`, `grade_run_lidar.log`,
 `grade_run_fused.log` được giữ để đối chiếu.
 
-## Giải thích ngắn (Parts E–H — tự viết)
+## Giải thích ngắn (Parts E–H)
 
 1. **Đo LiDAR và camera trong EKF:** LiDAR đo tâm 3D trong hệ tọa độ cảm biến, `z=[x,y,z]`, `R` là covariance theo mét². Camera đo pixel `z=[u,v]`, dùng phép chiếu pinhole từ tọa độ camera và `R=diag(σ_i²,σ_j²)` theo pixel². Mỗi sensor có hàm đo/Jacobian riêng; EKF dùng chúng để tính innovation và cập nhật cùng trạng thái 6D.
 2. **Mahalanobis gating:** Dùng `d²=γᵀS⁻¹γ` để xét độ lệch so với bất định tổng hợp của track và measurement; cổng χ² theo số chiều đo loại cặp không hợp lý trước khi greedy matching. Vì chuẩn hóa theo `S`, cùng một sai lệch được chấp nhận rộng hơn khi bất định lớn; Euclidean không xét covariance.
@@ -67,16 +67,18 @@ Khi lệch ngang tăng, residual pixel và `d²` trung vị tăng, còn tỷ l�
 Ghi rõ, kể cả khi không dùng ("Không dùng AI"). Xem [RULES.md](../RULES.md) mục 2.
 
 - Công cụ đã dùng (ChatGPT, Copilot, Claude, …): ChatGPT (Codex).
-- Dùng cho phần nào (hàm, câu hỏi, debug): Hỗ trợ triển khai/rà soát E–H, trực quan hóa track, chạy và diễn giải thử nghiệm calibration; báo cáo dùng số liệu chạy thực tế.
+- Dùng cho phần nào (hàm, câu hỏi, debug): Hỗ trợ triển khai/rà soát E–H, viết script và trực quan hóa track, thiết kế/diễn giải thử nghiệm calibration, soạn nháp phần giải thích và báo cáo; số liệu báo cáo lấy từ các lần chạy thực tế.
 - Cách bạn đã kiểm tra lại (pytest, chạy Waymo, đối chiếu công thức): Chạy `pytest student/tests -q` (128 passed); chạy `--fusion compare --seed 0` trên frame 0–198; chạy ba mức lệch extrinsic, lưu kết quả; đối chiếu metrics với JSONL.
+
+Học viên cần tự rà soát và bảo đảm có thể giải thích code cùng nội dung báo cáo theo quy định lab.
 
 ## Checklist nộp
 
-- [ ] **Part E–H** trong `workspace/` đã implement; `pytest student/tests -q` không còn `failed`/`xfailed`
-- [ ] Part A–D: không bắt buộc sửa (hoặc ghi chú nếu bạn đã sửa)
-- [ ] Lần chạy chấm điểm: `--fusion compare --seed 0`, `frame_start: 0`, `frame_end: 198`
-- [ ] Đã commit `student/artifacts/metrics*.json` và `student/artifacts/grade_run*.log` (không sửa tay)
-- [ ] Đã điền đủ file này, gồm khai báo AI
-- [ ] Không commit dữ liệu Waymo, weights, `paths.yaml`, API key
-- [ ] `python tools/check_submission.py` báo `KẾT QUẢ: SẴN SÀNG NỘP`
-- [ ] Đã push và nộp link repo + commit hash trên LMS ([hướng dẫn nộp](../SUBMISSION.md))
+- [x] **Part E–H** trong `workspace/` đã implement; `pytest student/tests -q` không còn `failed`/`xfailed` (128 passed)
+- [x] Part A–D giữ nguyên; không thuộc phần bắt buộc sửa của bài này
+- [x] Lần chạy chấm điểm: `--fusion compare --seed 0`, `frame_start: 0`, `frame_end: 198`
+- [x] Đã commit `student/artifacts/metrics*.json` và `student/artifacts/grade_run*.log` (không sửa tay)
+- [x] Đã điền đủ file này, gồm khai báo AI
+- [x] Không commit dữ liệu Waymo, weights, `paths.yaml`, API key
+- [x] `python tools/check_submission.py` báo `KẾT QUẢ: SẴN SÀNG NỘP`
+- [x] Đã push repo; theo yêu cầu hiện tại không nộp LMS. Lấy hash commit mới nhất bằng `git rev-parse HEAD`.
